@@ -16,7 +16,11 @@ namespace LightweightGUI
 class CTopLevelWindow : public CSysWindow
 {
 public:
-	CTopLevelWindow();
+	CTopLevelWindow() {};
+#ifdef WIN32
+	CTopLevelWindow(const string &wname, CSysWindow *parent, int x, int y, int cx, int cy, const string &clname, DWORD clstyle, DWORD style,
+		DWORD exstyle, HMENU hmenu, WNDPROC wproc);
+#endif
 	virtual ~CTopLevelWindow();
 };
 

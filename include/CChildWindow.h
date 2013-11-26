@@ -8,12 +8,12 @@
 #ifndef CCHILDWINDOW_H_
 #define CCHILDWINDOW_H_
 
-#include "CSysWindow.h"
+//#include "CSysWindow.h"
 
 namespace LightweightGUI
 {
 
-class CChildWindow : public CSysWindow
+class CChildWindow// : public CSysWindow
 {
 public:
 	CChildWindow();

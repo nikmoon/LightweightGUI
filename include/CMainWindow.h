@@ -16,8 +16,13 @@ namespace LightweightGUI
 class CMainWindow : public CTopLevelWindow
 {
 public:
-	CMainWindow();
+	CMainWindow() {};
+#ifdef WIN32
+	CMainWindow(const string &wname, int x = CW_USEDEFAULT, int y = CW_USEDEFAULT, int cx = CW_USEDEFAULT, int cy = CW_USEDEFAULT);
+#endif
 	virtual ~CMainWindow();
+
+	virtual void OnEvent_Destroy(CEventInfo &ev);
 };
 
 } /* namespace LightweightGUI */

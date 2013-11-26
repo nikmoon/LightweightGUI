@@ -1,22 +1,22 @@
 /*
- * CSysWindow.cpp
+ * CControlElement.cpp
  *
- *  Created on: 25 но€б. 2013 г.
+ *  Created on: 26 но€б. 2013 г.
  *      Author: karpachevnk
  */
 
-#include "CSysWindow.h"
+#include "CControlElement.h"
 
 namespace LightweightGUI
 {
 
-CSysWindow::CSysWindow()
+CControlElement::CControlElement()
 {
 	// TODO Auto-generated constructor stub
 
 }
 
-CSysWindow::~CSysWindow()
+CControlElement::~CControlElement()
 {
 	// TODO Auto-generated destructor stub
 }
