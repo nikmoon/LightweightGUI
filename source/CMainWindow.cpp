@@ -10,10 +10,19 @@
 namespace LightweightGUI
 {
 
+#define CMAINWINDOW_CPP
+#include "Application.h"
+
 
 #ifdef WIN32
+CMainWindow::CMainWindow(const string &wname, const SWndGeom &geom)
+	: CTopLevelWindow(wname, WS_OVERLAPPEDWINDOW|WS_VISIBLE, (COLOR_WINDOW+1), NULL, geom)
+{
+
+}
+
 CMainWindow::CMainWindow(const string &wname, int x, int y, int cx, int cy)
-	: CTopLevelWindow(wname,NULL,x,y,cx,cy,"CMainWindowClass",CS_HREDRAW|CS_VREDRAW,WS_OVERLAPPEDWINDOW|WS_VISIBLE,0,NULL,EventWndProc)
+	: CTopLevelWindow(wname, WNDFLAG_BORDER, (COLOR_BTNFACE+1), NULL, x, y, cx, cy)
 {
 
 }
@@ -25,15 +34,10 @@ CMainWindow::~CMainWindow()
 	// TODO Auto-generated destructor stub
 }
 
-
 void
 CMainWindow::OnEvent_Destroy(CEventInfo &ev)
 {
-	CTopLevelWindow::OnEvent_Destroy(ev);
-#ifdef WIN32
-	::PostQuitMessage(0);
-	ev.m_Result = 0;
-#endif
+	CloseApp(0);
 }
 
 } /* namespace LightweightGUI */

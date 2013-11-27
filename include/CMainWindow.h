@@ -17,9 +17,8 @@ class CMainWindow : public CTopLevelWindow
 {
 public:
 	CMainWindow() {};
-#ifdef WIN32
-	CMainWindow(const string &wname, int x = CW_USEDEFAULT, int y = CW_USEDEFAULT, int cx = CW_USEDEFAULT, int cy = CW_USEDEFAULT);
-#endif
+	CMainWindow(const string &wname, const SWndGeom &geom);
+	CMainWindow(const string &wname, int x, int y, int cx, int cy);
 	virtual ~CMainWindow();
 
 	virtual void OnEvent_Destroy(CEventInfo &ev);

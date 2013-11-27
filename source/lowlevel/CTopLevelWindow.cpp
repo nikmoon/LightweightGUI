@@ -10,19 +10,20 @@
 namespace LightweightGUI
 {
 
-
-#ifdef WIN32
-CTopLevelWindow::CTopLevelWindow(const string &wname, CSysWindow *parent, int x, int y, int cx, int cy, const string &clname, DWORD clstyle, DWORD style,
-	DWORD exstyle, HMENU hmenu, WNDPROC wproc)
-	: CSysWindow(wname,parent,x,y,cx,cy,clname,clstyle,style,exstyle,hmenu,wproc)
+CTopLevelWindow::CTopLevelWindow(const string &wname, DWORD flags, DWORD bcolor, CSysWindow *parent, const SWndGeom &geom)
+	: CSysWindow(wname, flags, bcolor, parent, geom)
 {
 	// TODO Auto-generated constructor stub
 }
-#endif
+
+CTopLevelWindow::CTopLevelWindow(const string &wname, DWORD flags, DWORD bcolor, CSysWindow *parent, int x, int y, int cx, int cy)
+	: CSysWindow(wname, flags, bcolor, parent, x, y, cx, cy)
+{
+
+}
 
 CTopLevelWindow::~CTopLevelWindow()
 {
-	// TODO Auto-generated destructor stub
 }
 
 

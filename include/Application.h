@@ -8,14 +8,40 @@
 #ifndef APPLICATION_H_
 #define APPLICATION_H_
 
-#include "CMainWindow.h"
+#include "CSysWindow.h"
+
+/*
+ *		Ёта часть подключаетс€ только в файле CMainWindow.cpp
+ */
+
+#ifdef CMAINWINDOW_CPP
+
+void
+CloseApp(int code)
+{
+#ifdef WIN32
+	::PostQuitMessage(code);
+#endif
+}
+
+/*
+ *		Ёта часть подключаетс€ в исполн€емом файле пользовател€
+ */
+#else	// CMAINWINDOW_CPP not defined
+
+void Init();
+void Done();
 
 #ifdef WIN32
 
-int WINAPI WinMain(HINSTANCE hInst, HINSTANCE hPrevInst, LPSTR CmdLine, int CmdShow)
+int WINAPI
+WinMain(HINSTANCE hInst, HINSTANCE hPrevInst, LPSTR CmdLine, int CmdShow)
 {
-	CMainWindow::m_hInst = hInst;
-	CApplicationWindow AppWindow;
+	// задаетс€ описатель модул€, который будет использоватьс€ дл€ создани€ всех окон и элементов приложени€
+	LightweightGUI::CSysWindow::m_hInst = hInst;
+
+	// функци€ пользовател€, создающа€ главное окно
+	Init();
 
 	BOOL bRet;
 	MSG msg;
@@ -31,10 +57,12 @@ int WINAPI WinMain(HINSTANCE hInst, HINSTANCE hPrevInst, LPSTR CmdLine, int CmdS
 		DispatchMessage(&msg);
 	}
 
+	// функци€ пользовател€, удал€юща€ главное окно
+	Done();
+
 	return msg.wParam;
 }
 
-
-#endif
-
+#endif	// WIN32
+#endif	// CMAINWINDOW_CPP
 #endif /* APPLICATION_H_ */

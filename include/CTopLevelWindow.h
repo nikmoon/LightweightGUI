@@ -17,10 +17,8 @@ class CTopLevelWindow : public CSysWindow
 {
 public:
 	CTopLevelWindow() {};
-#ifdef WIN32
-	CTopLevelWindow(const string &wname, CSysWindow *parent, int x, int y, int cx, int cy, const string &clname, DWORD clstyle, DWORD style,
-		DWORD exstyle, HMENU hmenu, WNDPROC wproc);
-#endif
+	CTopLevelWindow(const string &wname, DWORD flags, DWORD bcolor, CSysWindow *parent, const SWndGeom &geom);
+	CTopLevelWindow(const string &wname, DWORD flags, DWORD bcolor, CSysWindow *parent, int x, int y, int cx, int cy);
 	virtual ~CTopLevelWindow();
 };
 
