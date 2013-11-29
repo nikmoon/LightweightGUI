@@ -119,7 +119,7 @@ public:
 	CSysWindow(const SCreateData &data);
 	CSysWindow(const string &wname, DWORD flags, DWORD bcolor, CSysWindow *parent, const SWndGeom &geom);
 	CSysWindow(const string &wname, DWORD flags, DWORD bcolor, CSysWindow *parent, int x, int y, int cx, int cy);
-	CSysWindow(ESystemControl ctype, const SCreateData &data);
+	CSysWindow(ESystemControl ctype, const string &wname, DWORD flags, DWORD bcolor, CSysWindow *parent, int x, int y, int cx, int cy);
 	void CreateSysWindow(const string &wname, DWORD flags, DWORD bcolor, CSysWindow *parent, const SWndGeom &geom);
 	virtual ~CSysWindow();
 	virtual void OnEvent_Default(CEventInfo &ev);

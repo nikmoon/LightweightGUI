@@ -164,17 +164,17 @@ StdClassData[] =
 
 
 
-CSysWindow::CSysWindow(ESystemControl ctype, const SCreateData &data)
+CSysWindow::CSysWindow(ESystemControl ctype, const string &wname, DWORD flags, DWORD bcolor, CSysWindow *parent, int x, int y, int cx, int cy)
 {
 #ifdef WIN32
 	// создаем окно стандартного системного класса
 	m_hWnd = ::CreateWindowEx(
 		0,
 		StdSysClassName[StdClassData[ctype].m_ClassNameIndex],
-		data.m_WndName.c_str(),
-		StdClassData[ctype].m_Flags|GetWinAPIFlags(data.m_Flags),
-		data.m_Geom.X,	data.m_Geom.Y, data.m_Geom.cX, data.m_Geom.cY,
-		data.m_WndParent->m_hWnd, NULL,
+		wname.c_str(),
+		StdClassData[ctype].m_Flags|GetWinAPIFlags(flags),
+		x, y, cx, cy,
+		parent->m_hWnd, NULL,
 		m_hInst, NULL);
 	// провер€ем успешность создани€
 	if (!m_hWnd)
@@ -184,11 +184,11 @@ CSysWindow::CSysWindow(ESystemControl ctype, const SCreateData &data)
 	// делаем прив€зку данного экземпл€ра к системному окну
 	::SetWindowLongPtr(m_hWnd, GWLP_USERDATA, (LONG_PTR)this);
 #endif
-	m_Geom = data.m_Geom;
-	m_WndName = data.m_WndName;
-	m_Flags = data.m_Flags;
-	m_BackColor = data.m_BackColor;
-	m_WndParent = data.m_WndParent;
+	m_Geom.X = x; m_Geom.Y = y; m_Geom.cX = cx; m_Geom.cY = cy;
+	m_WndName = wname;
+	m_Flags = flags;
+	m_BackColor = bcolor;
+	m_WndParent = parent;
 }
 
 
