@@ -18,7 +18,7 @@ DWORD
 	CMainWindow::sm_DefFlags = WNDFLAG_MAINWINDOW;
 
 DWORD
-	CMainWindow::sm_DefBackColor = (0xBB | (0xBB << 8) | (0xBB << 16));
+	CMainWindow::sm_DefBackColor = (0xCC | (0xCC << 8) | (0xCC << 16));
 
 
 CMainWindow::CMainWindow(const string &wname, const SWndGeom &geom)

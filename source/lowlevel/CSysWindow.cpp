@@ -109,6 +109,7 @@ CSysWindow::CSysWindow()
 {
 #ifdef WIN32
 	m_hWnd = NULL;
+	m_DefWndProc = ::DefWindowProc;
 #endif
 }
 
@@ -131,11 +132,74 @@ CSysWindow::CSysWindow(const string &wname, DWORD flags, DWORD bcolor, CSysWindo
 }
 
 
+#ifdef WIN32
+
+// имена стандартных системных классов WinAPI
+LPCTSTR StdSysClassName[] =
+{
+	WC_BUTTON,
+	WC_COMBOBOX,
+	WC_EDIT,
+	WC_SCROLLBAR,
+	WC_STATIC,
+	TOOLBARCLASSNAME,
+	WC_TREEVIEW
+};
+
+// информаци€ дл€ создани€ системных классов
+struct SStdClassData
+{
+	int m_ClassNameIndex;	// индекс имени класса WinAPI
+	DWORD m_Flags;			// специфические дл€ данного класса флаги WinAPI
+}
+StdClassData[] =
+{
+	{0, BS_PUSHBUTTON | WS_CHILD},						// button
+	{0, BS_AUTOCHECKBOX | BS_PUSHLIKE | WS_CHILD},		// button_fixed
+	{0, BS_AUTOCHECKBOX | WS_CHILD},					// checkbox2
+	{0, BS_AUTO3STATE | WS_CHILD}						// checkbox3
+};
+#endif
+
+
+
+
+CSysWindow::CSysWindow(ESystemControl ctype, const SCreateData &data)
+{
+#ifdef WIN32
+	// создаем окно стандартного системного класса
+	m_hWnd = ::CreateWindowEx(
+		0,
+		StdSysClassName[StdClassData[ctype].m_ClassNameIndex],
+		data.m_WndName.c_str(),
+		StdClassData[ctype].m_Flags|GetWinAPIFlags(data.m_Flags),
+		data.m_Geom.X,	data.m_Geom.Y, data.m_Geom.cX, data.m_Geom.cY,
+		data.m_WndParent->m_hWnd, NULL,
+		m_hInst, NULL);
+	// провер€ем успешность создани€
+	if (!m_hWnd)
+		throw ::GetLastError();
+	// задаем адрес дефолтной процедуры обработки сообщений и устанавливаем первой свою
+	m_DefWndProc = (WNDPROC)::SetWindowLongPtr(m_hWnd, GWLP_WNDPROC, (LONG_PTR)CWndClassWrapper::EventWndProc);
+	// делаем прив€зку данного экземпл€ра к системному окну
+	::SetWindowLongPtr(m_hWnd, GWLP_USERDATA, (LONG_PTR)this);
+#endif
+	m_Geom = data.m_Geom;
+	m_WndName = data.m_WndName;
+	m_Flags = data.m_Flags;
+	m_BackColor = data.m_BackColor;
+	m_WndParent = data.m_WndParent;
+}
+
+
 CSysWindow::~CSysWindow()
 {
 #ifdef WIN32
-	// отмен€ем регистрацию оконного класса
-	CommonWndClass.UnregisterWndClass();
+	if (m_DefWndProc == ::DefWindowProc)	// значит не системное окно
+	{
+		// отмен€ем регистрацию оконного класса
+		CommonWndClass.UnregisterWndClass();
+	}
 #endif
 }
 
@@ -147,6 +211,29 @@ void
 CSysWindow::CreateSysWindow(const string &wname, DWORD flags, DWORD bcolor, CSysWindow *parent, const SWndGeom &geom)
 {
 #ifdef WIN32
+	// создаем окно
+	m_hWnd = ::CreateWindowEx(0, CommonWndClass.GetName().c_str(), wname.c_str(), GetWinAPIFlags(flags), geom.X, geom.Y, geom.cX, geom.cY,
+			(parent == NULL)?NULL:parent->m_hWnd, NULL, m_hInst, NULL);
+	if (!m_hWnd)
+		throw ::GetLastError();
+	// задаем адрес дефолтной системной функции обработки событий
+	m_DefWndProc = ::DefWindowProc;
+	// делаем прив€зку данного экземпл€ра к системному окну
+	::SetWindowLongPtr(m_hWnd, GWLP_USERDATA, (LONG_PTR)this);
+	// после прив€зки необходимо заполнить задний фон
+	::InvalidateRect(m_hWnd,NULL,TRUE);
+#endif
+	m_Geom = geom;
+	m_WndName = wname;
+	m_Flags = flags;
+	m_BackColor = bcolor;
+	m_WndParent = parent;
+}
+
+#ifdef WIN32
+DWORD
+CSysWindow::GetWinAPIFlags(DWORD flags)
+{
 	static DWORD ws_flags[] =
 	{
 		WS_BORDER,
@@ -176,22 +263,9 @@ CSysWindow::CreateSysWindow(const string &wname, DWORD flags, DWORD bcolor, CSys
 		}
 		fbit <<= 1;	// следующий битовый флаг
 	}
-
-	// создаем окно
-	m_hWnd = ::CreateWindowEx(0, CommonWndClass.GetName().c_str(), wname.c_str(), resf, geom.X, geom.Y, geom.cX, geom.cY,
-			(parent == NULL)?NULL:parent->m_hWnd, NULL, m_hInst, NULL);
-	if (!m_hWnd)
-		throw ::GetLastError();
-	// делаем прив€зку данного экземпл€ра к системному окну
-	::SetWindowLongPtr(m_hWnd, GWLP_USERDATA, (LONG_PTR)this);
-	::InvalidateRect(m_hWnd,NULL,TRUE);
-#endif
-	m_Geom = geom;
-	m_WndName = wname;
-	m_Flags = flags;
-	m_BackColor = bcolor;
-	m_WndParent = parent;
+	return resf;
 }
+#endif	// WIN32
 
 //
 //	ќбработчик по-умолчанию
@@ -201,7 +275,7 @@ void
 CSysWindow::OnEvent_Default(CEventInfo &ev)
 {
 #ifdef WIN32
-	ev.m_Result = ::DefWindowProc(m_hWnd, ev.m_Msg, ev.m_WP, ev.m_LP);
+	ev.m_Result = m_DefWndProc(m_hWnd, ev.m_Msg, ev.m_WP, ev.m_LP);
 #else
 	#error "CSysWindow::OnEvent_Default(CEventInfo &ev) реализован только дл€ WIN32"
 #endif
@@ -223,6 +297,11 @@ CSysWindow::OnEvent(CEventInfo &ev)
 			OnEvent_EraseBackGround(ev);
 			break;
 		case WM_DESTROY:
+			if (m_DefWndProc != ::DefWindowProc)	// значит системное окно
+			{
+				// восстанавливаем адрес системной оконной процедуры
+				::SetWindowLongPtr(m_hWnd, GWLP_WNDPROC, (LONG_PTR)m_DefWndProc);
+			}
 			OnEvent_Destroy(ev);
 			break;
 		case WM_PAINT:

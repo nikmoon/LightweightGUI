@@ -11,6 +11,10 @@
 #include <string>
 #include "CEventInfo.h"
 
+#ifdef WIN32
+#include <commctrl.h>
+#endif
+
 using namespace std;
 
 namespace LightweightGUI
@@ -54,10 +58,10 @@ public:
 	const string &GetName();
 	void RegisterWndClass();
 	void UnregisterWndClass();
+	static LRESULT CALLBACK EventWndProc(HWND hwnd, UINT msg, WPARAM wp, LPARAM lp);
 private:
 	bool m_Registered;
 	string m_ClassName;
-	static LRESULT CALLBACK EventWndProc(HWND hwnd, UINT msg, WPARAM wp, LPARAM lp);
 };
 #endif
 
@@ -81,6 +85,26 @@ struct SCreateData
 	SWndGeom m_Geom;			// геометрия окна
 };
 
+enum ESystemControl
+{
+	ESCTRL_BUTTON = 0,
+	ESCTRL_BUTTON_FIXED,
+
+	ESCTRL_CHECKBOX2,
+	ESCTRL_CHECKBOX3,
+
+	ESCTRL_COMBOBOX,
+	ESCTRL_EDITBOX,
+	ESCTRL_GROUPBOX,
+	ESCTRL_MENUBAR,
+	ESCTRL_SCROLLBAR_H,
+	ESCTRL_SCROLLBAR_V,
+	ESCTRL_STATUSBAR,
+	ESCTRL_TEXTLABEL,
+	ESCTRL_TOOLBAR,
+	ESCTRL_TREEVIEW
+};
+
 //
 //	Обертка для системного окна
 //
@@ -94,6 +118,7 @@ public:
 	CSysWindow(const SCreateData &data);
 	CSysWindow(const string &wname, DWORD flags, DWORD bcolor, CSysWindow *parent, const SWndGeom &geom);
 	CSysWindow(const string &wname, DWORD flags, DWORD bcolor, CSysWindow *parent, int x, int y, int cx, int cy);
+	CSysWindow(ESystemControl ctype, const SCreateData &data);
 	void CreateSysWindow(const string &wname, DWORD flags, DWORD bcolor, CSysWindow *parent, const SWndGeom &geom);
 	virtual ~CSysWindow();
 	virtual void OnEvent_Default(CEventInfo &ev);
@@ -121,9 +146,11 @@ public:
 #ifdef WIN32
 public:
 	static HINSTANCE m_hInst;
+	DWORD GetWinAPIFlags(DWORD flags);
 private:
 	static CWndClassWrapper CommonWndClass;
 	HWND m_hWnd;
+	WNDPROC m_DefWndProc;
 #endif	// WIN32
 
 };
