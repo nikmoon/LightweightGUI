@@ -9,6 +9,7 @@
 #define CSYSWINDOW_H_
 
 #include <string>
+#include <vector>
 #include "CEventInfo.h"
 
 #ifdef WIN32
@@ -126,6 +127,8 @@ public:
 	virtual void OnEvent_Destroy(CEventInfo &ev);
 	virtual void OnEvent_EraseBackGround(CEventInfo &ev);
 	virtual void OnEvent_RedrawClientArea(CEventInfo &ev);
+	virtual void OnEvent_LButtonDown(CEventInfo &ev);
+	virtual void OnEvent_LButtonUp(CEventInfo &ev);
 
 	// Геттеры свойств окна
 	SWndGeom GetWndGeom() const { return m_Geom; };
@@ -139,7 +142,11 @@ public:
 	// Методы
 	void Show();
 	void Hide();
+	void Destroy();
 
+	virtual void ExecuteAction(DWORD aindex, CSysWindow &owned) {};
+
+private:
 	//
 	// объявления и определения для ОС Windows
 	//
@@ -147,6 +154,8 @@ public:
 public:
 	static HINSTANCE m_hInst;
 	DWORD GetWinAPIFlags(DWORD flags);
+
+	HWND GetHWnd() const { return m_hWnd; };
 private:
 	static CWndClassWrapper CommonWndClass;
 	HWND m_hWnd;

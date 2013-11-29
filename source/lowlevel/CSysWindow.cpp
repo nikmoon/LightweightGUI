@@ -159,7 +159,7 @@ StdClassData[] =
 	{0, BS_AUTOCHECKBOX | WS_CHILD},					// checkbox2
 	{0, BS_AUTO3STATE | WS_CHILD}						// checkbox3
 };
-#endif
+#endif	// WIN32
 
 
 
@@ -231,6 +231,7 @@ CSysWindow::CreateSysWindow(const string &wname, DWORD flags, DWORD bcolor, CSys
 }
 
 #ifdef WIN32
+// преобразование кроссплатформенных флагов дл€ создани€ окон во флаги WinAPI
 DWORD
 CSysWindow::GetWinAPIFlags(DWORD flags)
 {
@@ -307,6 +308,12 @@ CSysWindow::OnEvent(CEventInfo &ev)
 		case WM_PAINT:
 			OnEvent_RedrawClientArea(ev);
 			break;
+		case WM_LBUTTONDOWN:
+			OnEvent_LButtonDown(ev);
+			break;
+		case WM_LBUTTONUP:
+			OnEvent_LButtonUp(ev);
+			break;
 		default:
 			OnEvent_Default(ev);
 			break;
@@ -350,6 +357,18 @@ CSysWindow::OnEvent_Destroy(CEventInfo &ev)
 	OnEvent_Default(ev);
 }
 
+void
+CSysWindow::OnEvent_LButtonDown(CEventInfo &ev)
+{
+	OnEvent_Default(ev);
+}
+
+void
+CSysWindow::OnEvent_LButtonUp(CEventInfo &ev)
+{
+	OnEvent_Default(ev);
+}
+
 
 // ќтобразить окна
 void
@@ -367,6 +386,16 @@ CSysWindow::Hide()
 {
 #ifdef WIN32
 	::ShowWindow(m_hWnd, SW_HIDE);
+#endif
+}
+
+
+// ”ничтожение системного окна, экземпл€р остаетс€
+void
+CSysWindow::Destroy()
+{
+#ifdef WIN32
+	::DestroyWindow(m_hWnd);
 #endif
 }
 
