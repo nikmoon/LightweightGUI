@@ -22,6 +22,9 @@ public:
 	virtual ~CMainWindow();
 
 	virtual void OnEvent_Destroy(CEventInfo &ev);
+
+	static DWORD sm_DefFlags;
+	static DWORD sm_DefBackColor;
 };
 
 } /* namespace LightweightGUI */

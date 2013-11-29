@@ -25,15 +25,21 @@ class CSysWindow;
 #endif
 
 
-
+//
+//	Флаги для задания различных элементов и характеристик окна при создании
+//
 const DWORD WNDFLAG_BORDER		= 0x00000001;	// 0x01 1 рамка для окна
 const DWORD WNDFLAG_CAPTION		= 0x00000002;	// 0x02 2 заголовок (автомат. включает рамку)
 const DWORD WNDFLAG_CLOSEBUTTON = 0x00000004;	// 0x04 3 кнопка закрытия окна (автомат. включает заголовок)
 const DWORD WNDFLAG_MINBUTTON	= 0x00000008;	// 0x08 4 кнопка сворачивания окна (автомат. включает кнопку закрытия и заголовок)
 const DWORD WNDFLAG_MAXBUTTON	= 0x00000010;	// 0x10 5 кнопка разворачивания окна (автомат. включает кнопку закрытия и заголовок)
 const DWORD WNDFLAG_SIZEBOX		= 0x00000020;	// 0x20 6 можно менять размер окна за рамку
-const DWORD WNDFLAG_CHILD		= 0x00000040;	// 0x40 7 расположение внутри родительского окна
-const DWORD WNDFLAG_DEFAULT		= 0x00000080;	// 0x80 8 включает все, кроме WNDFLAG_CHILD
+
+const DWORD WNDFLAG_CHILD		= 0x00000040;	// 0x40 7 расположение внутри родительского окна (не сочетается с DEFAULT)
+const DWORD WNDFLAG_DEFAULT		= 0x00000080;	// 0x80 8 просто прямоугольник (не сочетается с CHILD)
+
+const DWORD WNDFLAG_NEEDED		= 0x000000C0;	// должен быть задан один из двух флагов выше, иначе будет установлен DEFAULT
+const DWORD WNDFLAG_MAINWINDOW	= 0x000000BF;	// флаги для создания главного окна приложения по-умолчанию
 
 
 
@@ -102,6 +108,8 @@ public:
 	DWORD GetFlags() const { return m_Flags; };
 	DWORD GetBackColor() const { return m_BackColor; };
 	CSysWindow *GetParentWindow() const { return m_WndParent; };
+
+	// Сеттеры свойств окна
 
 	// Методы
 	void Show();

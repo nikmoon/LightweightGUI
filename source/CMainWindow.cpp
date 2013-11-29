@@ -14,19 +14,24 @@ namespace LightweightGUI
 #include "Application.h"
 
 
-#ifdef WIN32
+DWORD
+	CMainWindow::sm_DefFlags = WNDFLAG_MAINWINDOW;
+
+DWORD
+	CMainWindow::sm_DefBackColor = (0xBB | (0xBB << 8) | (0xBB << 16));
+
+
 CMainWindow::CMainWindow(const string &wname, const SWndGeom &geom)
-	: CTopLevelWindow(wname, WS_OVERLAPPEDWINDOW|WS_VISIBLE, (COLOR_WINDOW+1), NULL, geom)
+	: CTopLevelWindow(wname, sm_DefFlags, sm_DefBackColor, NULL, geom)
 {
 
 }
 
 CMainWindow::CMainWindow(const string &wname, int x, int y, int cx, int cy)
-	: CTopLevelWindow(wname, WNDFLAG_BORDER, (COLOR_BTNFACE+1), NULL, x, y, cx, cy)
+	: CTopLevelWindow(wname, sm_DefFlags, sm_DefBackColor, NULL, x, y, cx, cy)
 {
 
 }
-#endif
 
 
 CMainWindow::~CMainWindow()

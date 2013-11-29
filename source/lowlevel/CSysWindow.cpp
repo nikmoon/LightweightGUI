@@ -149,37 +149,36 @@ CSysWindow::CreateSysWindow(const string &wname, DWORD flags, DWORD bcolor, CSys
 #ifdef WIN32
 	static DWORD ws_flags[] =
 	{
-		WS_POPUP,
+		WS_BORDER,
 		WS_BORDER | WS_CAPTION,
 		WS_BORDER | WS_CAPTION | WS_SYSMENU,
 		WS_BORDER | WS_CAPTION | WS_MINIMIZEBOX | WS_SYSMENU,
 		WS_BORDER | WS_CAPTION | WS_MAXIMIZEBOX | WS_SYSMENU,
 		WS_SIZEBOX,
 		WS_CHILD,
-		WS_OVERLAPPEDWINDOW
+		WS_POPUP
 	};
 
 	// разбираем флаги
-	DWORD f = 0;
-	int index = 0;
-	DWORD bit = 0x01;
+	if (!(flags & WNDFLAG_NEEDED))	// если один из требуемых флагов не задан
+		flags |= WNDFLAG_DEFAULT;	// установим флаг по-умолчанию
 
-	while (flags)
+	DWORD resf = 0;		// флаги в формате Win32 WinAPI (WS_...)
+	DWORD fbit = 0x01;	// текущий провер€емый бит заданного флага
+
+	// побитово проверим заданные флаги
+	// index - индекс, сопоставл€ющий пор€дковый номер бита флага, набору флагов WinAPI
+	for(DWORD index = 0; index < (sizeof(ws_flags)/sizeof(DWORD)); index++)
 	{
-		if (flags & bit)
+		if (flags & fbit)	// если бит текущего флага установлен
 		{
-			f |= ws_flags[index];
-			flags &= ~bit;
+			resf |= ws_flags[index];	// добавл€ем нужные биты во флаг в формате WinAPI
 		}
-		index++;
-		bit <<= 1;
+		fbit <<= 1;	// следующий битовый флаг
 	}
 
-	flags = f;
-
-
 	// создаем окно
-	m_hWnd = ::CreateWindowEx(0, CommonWndClass.GetName().c_str(), wname.c_str(), flags, geom.X, geom.Y, geom.cX, geom.cY,
+	m_hWnd = ::CreateWindowEx(0, CommonWndClass.GetName().c_str(), wname.c_str(), resf, geom.X, geom.Y, geom.cX, geom.cY,
 			(parent == NULL)?NULL:parent->m_hWnd, NULL, m_hInst, NULL);
 	if (!m_hWnd)
 		throw ::GetLastError();
@@ -246,7 +245,9 @@ CSysWindow::OnEvent_EraseBackGround(CEventInfo &ev)
 	HDC hDC = (HDC)ev.m_WP;
 	RECT clRect;
 	::GetClientRect(m_hWnd,&clRect);
-	::FillRect(hDC,&clRect,(HBRUSH)m_BackColor);
+	HBRUSH br = ::CreateSolidBrush(m_BackColor);
+	::FillRect(hDC,&clRect,br);
+	::DeleteObject(br);
 	ev.m_Result = 0;
 #endif
 }
