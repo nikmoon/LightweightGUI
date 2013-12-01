@@ -89,18 +89,20 @@ IV. Платформозависимые элементы.
 *******************************************
 
 main.cpp
+
+...
+#include "Application.h"
+...
+void Init()
 {
 ...
-#include "CMainWindow.h"
+create main window
+...
+}
 
-using namespace LightweightGUI;
-
-#define CAPPWINDOW Имя_класса_окна_приложения
-//
-// объявление Имя_класса_окна_приложения : pubic CMainWindow
-//
-#include "Application.h"
-//
-// определение Имя_класса_окна_приложения
-//
+void Done()
+{
+...
+destroy main window
+...
 }
