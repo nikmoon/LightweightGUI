@@ -294,6 +294,17 @@ CSysWindow::OnEvent(CEventInfo &ev)
 #ifdef WIN32
 	switch (ev.m_Msg)
 	{
+		case WM_COMMAND:
+			if (ev.m_LP != 0)	// сообщение от элемента управления
+			{
+				CSysWindow *pControl = (CSysWindow*)::GetWindowLongPtr((HWND)ev.m_LP, GWLP_USERDATA);
+				DWORD aindex = pControl->GetActionIndex(ev);
+				ExecuteAction(aindex, *pControl);
+				ev.m_Result = 0;	// данное сообщение обработано
+			}
+			else
+				OnEvent_Default(ev);
+			break;
 		case WM_ERASEBKGND:
 			OnEvent_EraseBackGround(ev);
 			break;
@@ -367,6 +378,13 @@ void
 CSysWindow::OnEvent_LButtonUp(CEventInfo &ev)
 {
 	OnEvent_Default(ev);
+}
+
+
+DWORD
+CSysWindow::GetActionIndex(CEventInfo &ev)
+{
+	return -1;
 }
 
 

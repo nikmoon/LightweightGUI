@@ -144,7 +144,8 @@ public:
 	void Hide();
 	void Destroy();
 
-	virtual void ExecuteAction(DWORD aindex, CSysWindow &owned) {};
+	virtual void ExecuteAction(DWORD aindex, CSysWindow &owned) { };
+	virtual DWORD GetActionIndex(CEventInfo &ev);
 
 private:
 	//
